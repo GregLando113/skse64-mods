@@ -111,19 +111,28 @@ struct ReadyWeaponHandler
 
 		if (a_event->flags == 0) {
 
-			auto playerPos = (*g_thePlayer)->pos;
-			printf("playerPos = (%.2f,%.2f,%.2f)\n", playerPos.x, playerPos.y, playerPos.z);
+			//auto playerPos = (*g_thePlayer)->pos + (*g_thePlayer)->;
+			//printf("playerPos = (%.2f,%.2f,%.2f)\n", playerPos.x, playerPos.y, playerPos.z);
 
-			auto formPos = g_curEvent.obj->pos;
-			printf("formPos = (%.2f,%.2f,%.2f)\n", formPos.x, formPos.y, formPos.z);
-			playerPos -= formPos;
+			//auto formPos = g_curEvent.obj->pos;
+			//printf("formPos = (%.2f,%.2f,%.2f)\n", formPos.x, formPos.y, formPos.z);
+			//playerPos -= formPos;
 
-			auto mag = sqrtf(playerPos.x*playerPos.x + playerPos.y*playerPos.y + playerPos.z*playerPos.z);
-			playerPos /= mag;
+			//auto mag = sqrtf(playerPos.x*playerPos.x + playerPos.y*playerPos.y + playerPos.z*playerPos.z);
+			//playerPos /= mag;
+
+			auto rot = (*g_thePlayer)->rot;
+
+			float x = sin(rot.z);
+			float y = cos(rot.z); 
+			float z = -sin(rot.x);
 
 
-			printf("[*] ReadyWeaponHandler::ProcessButton dev=%d evnt=%d v=(%.2f,%.2f,%.2f) flags=%X\n", a_event->deviceType, a_event->eventType, playerPos.x, playerPos.y, playerPos.z, a_event->flags);
-			g_tasks->AddTask(new ApplyHavokImpulseTask(g_curEvent.obj, -playerPos.x, -playerPos.y, -formPos.z, 10 * g_holdTick));
+			x *= (1.0f - abs(z));
+			y *= (1.0f - abs(z));
+
+			printf("[*] ReadyWeaponHandler::ProcessButton dev=%d evnt=%d v=(%.2f,%.2f,%.2f) flags=%X\n", a_event->deviceType, a_event->eventType, x, y, z, a_event->flags);
+			g_tasks->AddTask(new ApplyHavokImpulseTask(g_curEvent.obj, x, y, z, 10 * g_holdTick));
 			g_holdTick = 0;
 			return;
 		}
